@@ -3,7 +3,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 require('dotenv').config()
-const port = process.env.PORT || 5000 ;
+const port = process.env.PORT || 5000;
 
 //  midleware
 
@@ -29,24 +29,69 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-     
+
     const serviceCollection = client.db('hotelbooking').collection('serviecs');
 
-    app.get('/serviecs', async(req, res)=>{
-        const cursor = serviceCollection.find();
-        const result = await cursor.toArray();
-        res.send(result)
+    const bookingCollection = client.db('hotelService').collection('bookings')
+
+    app.get('/serviecs', async (req, res) => {
+      const cursor = serviceCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
+    // room services is here
+    app.get('/serviecs/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const options = {
+        projection: { description: 1, room_size: 1, price_per_night: 1, room_image: 1, },
+      }
+      const result = await serviceCollection.findOne(query, options);
+      res.send(result)
     })
 
 
-    // id here
 
+
+
+    // id here
     app.get('/newRoom/:id', async (req, res) => {
-        const result = await serviceCollection.findOne({
-          _id: new ObjectId(req.params.id),
-        });
-        res.send(result)
-      })
+      const result = await serviceCollection.findOne({
+        _id: new ObjectId(req.params.id),
+      });
+      res.send(result)
+    })
+
+    // bookings
+     app.get('/bookings', async (req, res)=>{
+      console.log(req.query.email);
+      let query = {};
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+       const result = await bookingCollection.find(query).toArray();
+       res.send(result)
+     })
+
+
+    // this is a bookings
+    app.post('/bookings', async(req, res)=>{
+         const booking = req.body;
+         console.log(booking);
+         const result = await bookingCollection.insertOne(booking);
+         res.send(result)
+    });
+
+
+
+
+
+
+
+
+
+
 
 
     // Send a ping to confirm a successful connection
@@ -65,9 +110,9 @@ run().catch(console.dir);
 
 
 
-app.get('/',(req, res)=>{
-    res.send('botel booking is running')
+app.get('/', (req, res) => {
+  res.send('hotel booking is running')
 })
-app.listen(port, ()=>{
-    console.log(`hotel booking server is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`hotel booking server is running on port ${port}`);
 })
