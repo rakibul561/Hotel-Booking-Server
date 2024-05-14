@@ -74,6 +74,14 @@ async function run() {
       res.send(result)
     })
 
+    // uppdated get oparetion
+    app.get('/bookings/:id', async (req, res) => {
+      const id = req.params;
+      const query = { _id: new ObjectId(id) }
+      const result = await bookingCollection.findOne(query)
+      res.send(result)
+    })
+
 
     // this is a bookings
     app.post('/bookings', async (req, res) => {
@@ -82,6 +90,24 @@ async function run() {
       const result = await bookingCollection.insertOne(booking);
       res.send(result)
     });
+
+    // update oparetion
+    app.put('/bookings/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updateRoom = req.body;
+      const room = {
+        $set: {
+          date: updateRoom.date
+        }
+      }
+      const result = await bookingCollection.updateOne(filter, room, options);
+      res.send(result)
+    })
+
+
+
 
 
     // delete oparetion
@@ -93,6 +119,8 @@ async function run() {
       res.send(result);
 
     })
+
+
 
 
 
