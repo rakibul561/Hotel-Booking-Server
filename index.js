@@ -33,14 +33,15 @@ async function run() {
     const serviceCollection = client.db('hotelbooking').collection('serviecs');
 
     const bookingCollection = client.db('hotelService').collection('bookings')
-
+ 
+    /* this ia a card section */
     app.get('/serviecs', async (req, res) => {
       const cursor = serviceCollection.find();
       const result = await cursor.toArray();
       res.send(result)
     })
 
-    // room services is here
+    // room services is here 
     app.get('/serviecs/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
