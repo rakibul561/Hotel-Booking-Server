@@ -110,7 +110,7 @@ async function run() {
 
 
 
-    // delete oparetion
+    // delete oparetion mybooking thake 
 
     app.delete('/bookings/:id', async (req, res) => {
       const id = req.params.id;
